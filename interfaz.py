@@ -48,3 +48,48 @@ class AntaresApp(ctk.CTk):
     def crear_inputs_datos(self, parent):
         parent.grid_columnconfigure(0, weight=1)
         parent.grid_columnconfigure(1, weight=1)
+        self.entry_cliente = self.input_box(parent, "Cliente", 0, 0)
+        self.entry_prod = self.input_box(parent, "Producto", 2, 0)
+        self.entry_cant = self.input_box(parent, "Cantidad", 2, 0)
+        self.entry_mp = self.input_box(parent, "Materia Prima ($)", 0, 1)
+        self.entry_horas = self.input_box(parent, "Horas Prod.", 1, 1)
+        self.entry_extras = self.input_box(parent, "Extras ($)", 2, 1)
+
+    def crear_inputs_config(self, parent):
+        self.entry_valor_hora = self.input_box(parent, "Valor Hora ($)", 0, 0)
+        self.entry_valor_hora.insert(0, "6500")
+        self.entry_indirectos.insert(0, "15")
+        self.entry_ganancia = self.input_box(parent, "% Ganancia", 0, 1)
+        self.entry_ganancia.insert(0, "40")
+        self.entry_bonif = self.input_box(parent, "Bonificacion ($)", 1, 1)
+        self.entry_bonif.insert(0, "0")
+
+    def input_box(self, parent, placeholder, r, c):
+        e = ctk.CTkEntry(parent, placeholder_text=placeholder)
+        e.grid(row=r, column=c, padx=10, pady=10, sticky="ew")
+        return e
+
+    #EVENTOS
+
+    def evento_calcular(self):
+        try:
+            #RECOLECCION DE DATOS
+            datos = {
+                'catidad': self.get_float(self.entry_cant),
+                'materia_prima': self.get_float(self.entry_mp),
+                'horas': self.get_float(self.entry_horas),
+                'extras': self.get_float(self.entry_extras),
+                'valor_hora': self.get_float(self.entry_valor_hora),
+                'pct_indirectos': self.get_float(self.entry_indirectos),
+                'pct_ganancia': self.get_float(self.entry_ganancia),
+                'bonificacion': self.get_float(self.entry_bonif)
+            }
+
+            #LLAMAMOS A LOGICA
+            self.resultados_cache = self.logic.calcular_total(datos)
+
+            #ACTUALIZAMOS UI
+            total = self.resultados_cache['total_operacion']
+            self.lbl_total.configure(text=f"${total:,.2f}")
+            self.btn_pdf.configure(state="normal")
+            
