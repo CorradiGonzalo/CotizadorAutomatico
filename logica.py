@@ -1,4 +1,4 @@
-class CalcladoraCostos():
+class CalculadoraCostos():
     def calcular_total(self, datos):
         """Recibe los inputs crudos y devuelve los resultados calculados"""
         try:

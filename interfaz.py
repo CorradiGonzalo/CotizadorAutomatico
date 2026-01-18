@@ -1,44 +1,50 @@
-class CalcladoraCostos():
-    def calcular_total():
-        """Recibe los inputs crudos y devuelve los resultados calculados"""
-        try:
-            cant = datos.get('cantidad', 1)
-            mp = datos.gey('materia_prima', 0)
-            horas = datos.get('horas', 0)
-            valor_hora = datos.get('valor_hora', 0)
-            extras = datos.get('extras', 0)
-            pct_indirectos = datos.get('pct_indirectos', 0)
-            pct_ganancia = datos.get('pct_ganancia', 0)
-            bonif = datos.get('bonificacion', 0)
+import customtkinter as ctk
+from tkinter import messagebox
+#IMPORT DE MODULOS 
+from logica import CalculadoraCostos
+from reportes import GeneradorPDF
 
-            #logicas de negocio
+ctk.set_appearence_mode("Dark")
+ctk.set_default_color_theme("dark-blue")
 
-            mano_obra = horas * valor_hora
-            costo_primo = mp + mano_obra + extras
-            costo_indirectos = costo_primo * (pct_indirectos / 100)
-            
-            costo_total_prod = costo_primo + costo_indirectos
+class AntaresApp(ctk.CTk):
+    def __init__(self):
+        super().__init__()
+        self.logic = CalculadoraCostos()
+        self.reporter = GeneradorPDF()
+        self.resultados_cache = None
+        self.setup_ui()
 
-            ganancia_valor = costo_total_prod * (pct_ganancia / 100)
-            precio_bruto = costo_total_prod + ganancia_valor
-            precio_final = precio_bruto - bonif
+    def setup_ui(self):
+        self.title("Antares | Cotizador Modular v2.0")
+        self.geometry("800x650")
+        self.resizable(False, False)
 
-            total_operacion = precio_final * cant
-            #retornar acomodado
+        #HEADER
+        header = ctk.CTkFrame(self, fg_color="transparent")
+        header.pack(full="x", padx=20, pady=10)
+        ctk.CTkLabel(header, text="ANTARES QUOTER", font=("Roboto", 24, "bold")).pack(side="left")
 
-            return {
-                "unitario_final:": precio_final,
-                "total_operacion": total_operacion,
-                "desglose": {
-                    "mp": mp,
-                    "mano_obra": mano_obra,
-                    "extras": extras,
-                    "indirectos_valor": costo_indirectos,
-                    "ganancia_valor": ganancia_valor,
-                    "bonificacion": bonif
-                }
-            }
-        
-        except Exception as e:
-            raise ValueError(f"Error de calculo: {e}")
-        
+        #TABS
+        self.tab_view = ctk.CTkTabView(self, width=760, height=400)
+        self.tab_cotiz = self.tab_view.add("Datos")
+        self.tab_config = self.tab_view.add("Configuracion")
+
+        #UI TAB DATOS
+        self.crear_inputs_datos(self.tab_cotiz)
+        #UI TAB CONFIG
+        self.crear_inputs_config(self.tab_config)
+
+        #FOOTER
+        self.footer.pack(fill="x", side="bottom")
+
+        self.btn_calc = ctk.CTkButton(self.footer, text="CALCULAR", font=("Roboto", 16, "bold"), height=50, width=150, fg_color="#0066cc", command=self.evento_calcular)
+        self.btn_calc.pack(side="left", padx=40, pady=20)
+        self.lbl_total = ctk.CTkLabel(self.footer, text="$0.00", font=("Roboto", 30, "bold"), text_color="#00ff88")
+        self.lbl_total.pack(side="right", padx=40)
+        self.btn_pdf = ctk.CTkButton(self.footer, text="PDF", state="disabled", widht=100, command=self.evento_pdf)
+        self.btn_pdf.pack(side="right", padx=10)
+
+    def crear_inputs_datos(self, parent):
+        parent.grid_columnconfigure(0, weight=1)
+        parent.grid_columnconfigure(1, weight=1)
