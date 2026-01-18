@@ -92,4 +92,20 @@ class AntaresApp(ctk.CTk):
             total = self.resultados_cache['total_operacion']
             self.lbl_total.configure(text=f"${total:,.2f}")
             self.btn_pdf.configure(state="normal")
-            
+
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
+    
+    def evento_pdf(self):
+        if not self.resultados_cache: return
+
+        datos_form = {
+            'cliente': self.entry_cliente.get() or "Consumidor Final", 
+            'producto': self.entry_prod.get() or "Varios"
+        }
+
+        #LLAMAR A REPORTES
+        archivo = self.reporter.generar_presupuesto(datos_form, self.resultados_cache)
+        messagebox.showinfo("Exito", f"PDF Generado: {archivo}")
+
+        
