@@ -1,9 +1,9 @@
 class CalcladoraCostos():
-    def calcular_total():
+    def calcular_total(self, datos):
         """Recibe los inputs crudos y devuelve los resultados calculados"""
         try:
             cant = datos.get('cantidad', 1)
-            mp = datos.gey('materia_prima', 0)
+            mp = datos.get('materia_prima', 0)
             horas = datos.get('horas', 0)
             valor_hora = datos.get('valor_hora', 0)
             extras = datos.get('extras', 0)
