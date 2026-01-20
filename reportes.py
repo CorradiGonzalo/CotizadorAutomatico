@@ -49,7 +49,7 @@ class GeneradorPDF:
         for concepto, valor in items_a_mostrar:
             if valor != 0:
                 pdf.cell(140, 10, concepto, 1)
-                pdf.cell(50, 10, f"{valor:m 2f}", 1, 1, "R")
+                pdf.cell(50, 10, f"${valor: 2f}", 1, 1, "R")
 
             #TOTAL
             pdf.set_font("Arial", "B", 14)
